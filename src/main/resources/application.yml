@@ -1,0 +1,99 @@
+server:
+  port: 8888
+  servlet:
+    context-path: /demo
+spring:
+  # mysql配置
+  autoconfigure:
+    # 排除 Druid 自动配置,否则druid sql监控，防火墙监控不生效
+    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    dynamic:
+      primary: master
+      strict: false
+      datasource:
+        # 主库配置
+        master:
+          url: jdbc:mysql://127.0.0.1:3306/demo?useUnicode=true&characterEncoding=UTF8&serverTimezone=Asia/Shanghai&testWhileIdle=true
+          username: root
+          password: 123@abcd
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          # 从库配置
+        slave:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://127.0.0.1:3306/hkvideo?useUnicode=true&characterEncoding=UTF8&serverTimezone=Asia/Shanghai&testWhileIdle=true
+          username: root
+          password: 123@abcd
+      # 配置_StatViewServlet配置,用于展示Druid的统计信息
+      #（考虑到安全问题默认并未启动，如需启用建议设置密码或白名单以保障安全）
+    druid:
+      stat-view-servlet:
+        # deny优先于allow，如果在deny列表中，就算在allow列表中，也会被拒绝。
+        # 如果allow没有配置或者为空，则允许所有访问
+        # 允许的IP
+        allow: 127.0.0.1,58.210.9.1/24,114.219.21.1/24,192.168.1.1/16
+        #拒绝的IP
+        #spring.datasource.druid.stat-view-servlet.deny=127.0.0.1
+        #监控页面登陆的用户名
+        login-username:
+        # 登陆监控页面所需的密码
+        login-password:
+        # 是否启用StatViewServlet（监控页面）默认值为false
+        enabled: true
+        #允许清空统计数据
+        reset-enable: true
+        #初始化时建立物理连接的个数。初始化发生在显示调用init方法，或者第一次getConnection时
+      initial-size: 5
+      #最大连接池数量
+      max-active: 20
+      #最小连接池数量
+      min-idle: 5
+      #获取连接时最大等待时间，单位毫秒。配置了maxWait之后，缺省启用公平锁，并发效率会有所下降，如果需要可以通过配置useUnfairLock属性为true使用非公平锁
+      max-wait: 500
+      # WebStatFilter配置
+      web-stat-filter:
+        # 是否启用StatFilter默认值false
+        enabled: true
+        # 匹配的url
+        url-pattern: /*
+        # 排除一些不必要的url，比如.js,/jslib/等等
+        exclusions: '*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico,/druid/*'
+        # 你可以关闭session统计功能
+        session-stat-enable: true
+        # 默认sessionStatMaxCount是1000个，你也可以按需要进行配置
+        session-stat-max-count: 1000
+        # 如果你的user信息保存在cookie中，你可以配置principalCookieName，使得druid知道当前的user是谁
+        principal-cookie-name: aniu
+        # 使得druid能够知道当前的session的用户是谁
+        principal-session-name: cross
+        # 配置profileEnable能够监控单个url调用的sql列表
+        profile-enable: true
+        #对配置已开启的 filters 即 stat(sql 监控)wall（防火墙）
+      filter:
+        #配置StatFilter (SQL监控配置)
+        stat:
+          #开启 SQL 监控
+          enabled: true
+          #慢查询
+          slow-sql-millis: 10000
+          #记录慢查询 SQL
+          log-slow-sql: true
+          #配置WallFilter (防火墙配置)
+        wall:
+          #开启防火墙
+          enabled: true
+          config:
+            update-allow: true #允许更新操作
+            drop-table-allow: false #禁止删表操作
+            insert-allow: true #允许插入操作
+            delete-allow: true #允许删除数据操作
+            select-allow: true #允许数据查询操作
+mybatis:
+  mapper-locations: classpath:mapper/*Mapper.xml
+  configuration:
+    map-underscore-to-camel-case: true
+  type-aliases-package: com.ch.demo.dao
+logging:
+  file:
+    name: ./logs/yqljfl-hkvideo.log
