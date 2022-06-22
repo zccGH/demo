@@ -89,6 +89,11 @@ spring:
             insert-allow: true #允许插入操作
             delete-allow: true #允许删除数据操作
             select-allow: true #允许数据查询操作
+  rabbitmq:
+    host: 121.199.20.77
+    port: 5672
+    username: guest
+    password: guest
 mybatis:
   mapper-locations: classpath:mapper/*Mapper.xml
   configuration:
