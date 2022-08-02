@@ -55,9 +55,9 @@ class DemoApplicationTests {
         System.out.println(o.toString());
     }
 
-    @RabbitListener(queues = "1")
-    public void messageListener(Object object){
+    /*@RabbitListener(queues = "1")
+    public void messageListener(Map<Integer,String> object){
         System.out.println("收到！"+ JSONObject.toJSONString(object));
-    }
+    }*/
 
 }
